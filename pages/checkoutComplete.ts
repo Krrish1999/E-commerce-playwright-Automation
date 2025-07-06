@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 
 export class CheckoutCompletePage {
   readonly page: Page;
@@ -15,16 +15,27 @@ export class CheckoutCompletePage {
     };
   }
 
+
   async checkUrl(url: string) {
-    await expect(this.page).toHaveURL(url);
+    await test.step(`Check URL is ${url}`, async () => {
+      await expect(this.page).toHaveURL(url);
+    });
   }
+
 
   async checksubHeader(text: string){
-    return expect(this.elements.subHeader).toContainText(text);
+    return await test.step('Check sub header', async () => {
+      await this.elements.subHeader.waitFor();
+      return expect(this.elements.subHeader).toContainText(text);
+    });
   }
 
+
   async checkSuccessImage(){
-    return expect(this.elements.successImage).toBeVisible();
+    return await test.step('Check success image', async () => {
+      await this.elements.successImage.waitFor();
+      return expect(this.elements.successImage).toBeVisible();
+    });
   }
 
 }

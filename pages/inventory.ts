@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 
 export class InventoryPage {
   readonly page: Page;
@@ -29,12 +29,19 @@ export class InventoryPage {
     };
   }
 
+
   async navigate() {
-    await this.page.goto('https://www.saucedemo.com/v1/inventory.html');
+    await test.step('Navigate to inventory page', async () => {
+      await this.page.goto('https://www.saucedemo.com/v1/inventory.html');
+      await this.elements.productSortContainer.waitFor();
+    });
   }
 
+
   async checkUrl(url: string) {
-    await expect(this.page).toHaveURL(url);
+    await test.step(`Check URL is ${url}`, async () => {
+      await expect(this.page).toHaveURL(url);
+    });
   }
 
 /**
@@ -43,8 +50,12 @@ export class InventoryPage {
  * @param {string} filter - The filter to be selected.
  * @return {Promise<void>} A Promise that resolves when the filter is selected.
  */
+
   async selectProductFilter(filter: string) {
-    await this.elements.productSortContainer.selectOption(filter);
+    await test.step(`Select product filter: ${filter}`, async () => {
+      await this.elements.productSortContainer.waitFor();
+      await this.elements.productSortContainer.selectOption(filter);
+    });
   }
 
   /**
@@ -52,13 +63,21 @@ export class InventoryPage {
    *
    * @return {Promise<string[]>} Array of product names
    */
+
   async getProductNames(): Promise<string[]> {
-    return await this.elements.productName.allTextContents();
+    return await test.step('Get product names', async () => {
+      await this.elements.productName.first().waitFor();
+      return await this.elements.productName.allTextContents();
+    });
   }
 
+
   async getProductPrices(): Promise<number[]> {
-    const priceStrings = await this.elements.productPrice.allTextContents();
-    return priceStrings.map(price => parseFloat(price.replace('$', '')));
+    return await test.step('Get product prices', async () => {
+      await this.elements.productPrice.first().waitFor();
+      const priceStrings = await this.elements.productPrice.allTextContents();
+      return priceStrings.map(price => parseFloat(price.replace('$', '')));
+    });
   }
 
   /**
@@ -66,10 +85,15 @@ export class InventoryPage {
    *
    * @param {string} productName - The name of the product to add to the cart.
    */
+
   async addProductToCart(productName: string) {
-    const item = this.elements.inventoryItems.filter({ hasText: productName });
-    const addButton = item.locator(this.elements.productAddToCartButton);
-    await addButton.click();
+    await test.step(`Add product to cart: ${productName}`, async () => {
+      const item = this.elements.inventoryItems.filter({ hasText: productName });
+      await item.first().waitFor();
+      const addButton = item.locator(this.elements.productAddToCartButton);
+      await addButton.first().waitFor();
+      await addButton.first().click();
+    });
   }
 
   /**
@@ -77,12 +101,20 @@ export class InventoryPage {
    *
    * @param {number} count - The expected count to be checked against the shopping cart count.
    */
+
   async checkShoppingCartCount(count: number) {
-    await expect(this.elements.shoppingCart).toHaveText(`${count}`);
+    await test.step(`Check shopping cart count: ${count}`, async () => {
+      await this.elements.shoppingCart.waitFor();
+      await expect(this.elements.shoppingCart).toHaveText(`${count}`);
+    });
   }
 
+
   async clickShoppingCart() {
-    await this.elements.shoppingCart.click();
+    await test.step('Click shopping cart', async () => {
+      await this.elements.shoppingCart.waitFor();
+      await this.elements.shoppingCart.click();
+    });
   }
 
   /**
@@ -90,12 +122,20 @@ export class InventoryPage {
    *
    * @return {Promise<string[]>} An array of strings representing the text content of cart items.
    */
+
   async checkCartProducts(): Promise<string[]> {
-    return await this.elements.cartItems.allTextContents();
+    return await test.step('Get cart products', async () => {
+      await this.elements.cartItems.first().waitFor();
+      return await this.elements.cartItems.allTextContents();
+    });
   }
 
+
   async clickCheckout() {
-    await this.elements.checkoutButton.click();
+    await test.step('Click checkout button', async () => {
+      await this.elements.checkoutButton.waitFor();
+      await this.elements.checkoutButton.click();
+    });
   }
 
 }

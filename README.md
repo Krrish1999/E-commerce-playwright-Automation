@@ -1,6 +1,6 @@
 # E-Commerce Playwright Automation
 
-This project is an end-to-end (E2E) test automation suite for an e-commerce web application using [Playwright](https://playwright.dev/). It covers user flows such as login, product filtering, adding items to the cart, and completing the checkout process. The tests are written in TypeScript and are designed to be robust, maintainable, and easy to extend.
+This project is an end-to-end (E2E) test automation suite for an e-commerce web application using [Playwright](https://playwright.dev/). It covers user flows such as login, product filtering, adding items to the cart, and completing the checkout process. The tests are written in TypeScript and follow best practices for maintainability, robustness, and clean reporting.
 
 ## Table of Contents
 - [Project Structure](#project-structure)
@@ -36,13 +36,17 @@ This project is an end-to-end (E2E) test automation suite for an e-commerce web 
 └── ...
 ```
 
+
 ## Features
 - **Login Tests**: Validates login with valid and invalid credentials.
 - **Product Filtering**: Tests product sorting by name and price.
 - **Cart & Checkout**: Adds items to cart, verifies cart contents, and completes checkout.
-- **Page Object Model**: All page interactions are encapsulated in the `pages/` directory for maintainability.
+- **Page Object Model (POM)**: All page interactions are encapsulated in the `pages/` directory for maintainability.
+- **Auto-Wait Integration**: All actions use Playwright's `locator.waitFor()` to ensure elements are ready before interaction, reducing flakiness.
+- **Step Reporting**: All actions and assertions are wrapped in `test.step()` for clean, detailed Playwright HTML reports.
 - **Environment Variables**: Credentials and sensitive data are managed via `.env`.
 - **HTML Reports**: Playwright generates detailed HTML reports after test runs.
+
 
 ## Setup & Installation
 
@@ -71,6 +75,7 @@ This project is an end-to-end (E2E) test automation suite for an e-commerce web 
      ```
    - Edit `.env` to set usernames and passwords as needed.
 
+
 ## Running Tests
 
 - **Run all tests:**
@@ -87,6 +92,7 @@ This project is an end-to-end (E2E) test automation suite for an e-commerce web 
   npx playwright show-report
   ```
 
+
 ## Environment Variables
 
 The `.env` file should contain the following variables:
@@ -100,6 +106,7 @@ INVALID_PASSWORD=secret_sauce_1
 
 These are used in the test scripts for login scenarios.
 
+
 ## Reports
 - Test results are saved in the `playwright-report/` directory.
 - To view the latest report, run:
@@ -107,14 +114,16 @@ These are used in the test scripts for login scenarios.
   npx playwright show-report
   ```
 
+
 ## Folder Structure Details
 
-- **pages/**: Contains Page Object Model (POM) classes for each page (login, inventory, checkout, etc.).
-- **tests/**: Contains Playwright test files covering different user flows.
+- **pages/**: Contains Page Object Model (POM) classes for each page (login, inventory, checkout, etc.). All actions use `locator.waitFor()` and are wrapped in `test.step()` for reliability and clean reporting.
+- **tests/**: Contains Playwright test files covering different user flows. All test actions and assertions are wrapped in `test.step()` for detailed step-by-step reports.
 - **playwright.config.ts**: Playwright configuration (test directory, browser settings, reporters, etc.).
 - **.env**: Stores environment variables for credentials.
 - **playwright-report/**: Auto-generated HTML reports after test runs.
 - **test-results/**: Raw test result files.
+
 
 ## Contributing
 1. Fork the repository

@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 
 export class CheckoutYourInfoPage {
   readonly page: Page;
@@ -21,28 +21,51 @@ export class CheckoutYourInfoPage {
     };
   }
 
+
   async navigate() {
-    await this.page.goto('https://www.saucedemo.com/v1/checkout-step-one.html');
+    await test.step('Navigate to checkout your info page', async () => {
+      await this.page.goto('https://www.saucedemo.com/v1/checkout-step-one.html');
+      await this.elements.firstNameInput.waitFor();
+    });
   }
+
 
   async checkUrl(url: string) {
-    await expect(this.page).toHaveURL(url);
+    await test.step(`Check URL is ${url}`, async () => {
+      await expect(this.page).toHaveURL(url);
+    });
   }
+
 
   async fillFirstName(firstName: string) {
-    await this.elements.firstNameInput.fill(firstName);
+    await test.step('Fill first name', async () => {
+      await this.elements.firstNameInput.waitFor();
+      await this.elements.firstNameInput.fill(firstName);
+    });
   }
+
 
   async fillLastName(lastName: string) {
-    await this.elements.lastNameInput.fill(lastName);
+    await test.step('Fill last name', async () => {
+      await this.elements.lastNameInput.waitFor();
+      await this.elements.lastNameInput.fill(lastName);
+    });
   }
+
 
   async fillZipCode(zipCode: string) {
-    await this.elements.zipCodeInput.fill(zipCode);
+    await test.step('Fill zip code', async () => {
+      await this.elements.zipCodeInput.waitFor();
+      await this.elements.zipCodeInput.fill(zipCode);
+    });
   }
 
+
   async clickContinueButton() {
-    await this.elements.continueButton.click();
+    await test.step('Click continue button', async () => {
+      await this.elements.continueButton.waitFor();
+      await this.elements.continueButton.click();
+    });
   }
 
 }

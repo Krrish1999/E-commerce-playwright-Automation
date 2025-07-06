@@ -28,12 +28,14 @@ const test = base.extend<{
 
 test.describe('Add item and checkout', () => {
   test.beforeEach(async ({ loginPage, inventoryPage }) => {
-    await loginPage.navigate();
-    await loginPage.fillUserName(process.env.STANDARD_USERNAME);
-    await loginPage.fillPassword(process.env.PASSWORD);
-    await loginPage.clickLoginButton();
-    await loginPage.checkUrl('https://www.saucedemo.com/v1/inventory.html');
-    await inventoryPage.navigate();
+    await test.step('Login as standard user and navigate to inventory', async () => {
+      await loginPage.navigate();
+      await loginPage.fillUserName(process.env.STANDARD_USERNAME);
+      await loginPage.fillPassword(process.env.PASSWORD);
+      await loginPage.clickLoginButton();
+      await loginPage.checkUrl('https://www.saucedemo.com/v1/inventory.html');
+      await inventoryPage.navigate();
+    });
   });
 
     /*
@@ -43,17 +45,19 @@ test.describe('Add item and checkout', () => {
     test('Add items to the Cart', async ({ inventoryPage }) => {
         const desiredProducts = ['Sauce Labs Backpack', 'Sauce Labs Bike Light', 'Sauce Labs Onesie'];
         
-        for (const product of desiredProducts) {
-          await inventoryPage.addProductToCart(product);
-        }
-        await inventoryPage.checkShoppingCartCount(desiredProducts.length);
-        await inventoryPage.clickShoppingCart();
+        await test.step('Add multiple items to cart and validate', async () => {
+          for (const product of desiredProducts) {
+            await inventoryPage.addProductToCart(product);
+          }
+          await inventoryPage.checkShoppingCartCount(desiredProducts.length);
+          await inventoryPage.clickShoppingCart();
 
-        await inventoryPage.checkUrl('https://www.saucedemo.com/v1/cart.html');
+          await inventoryPage.checkUrl('https://www.saucedemo.com/v1/cart.html');
 
-        const cartProducts = await inventoryPage.checkCartProducts();
-        expect(cartProducts).toHaveLength(desiredProducts.length);
-        expect(cartProducts).toEqual(desiredProducts);
+          const cartProducts = await inventoryPage.checkCartProducts();
+          expect(cartProducts).toHaveLength(desiredProducts.length);
+          expect(cartProducts).toEqual(desiredProducts);
+        });
 
     });
 
@@ -63,32 +67,34 @@ test.describe('Add item and checkout', () => {
     test('Perform Checkout', async ({ inventoryPage, checkOutYourInfoPage, checkoutOverviewPage, checkoutCompletePage }) => {
       const desiredProduct = ['Sauce Labs Backpack'];
       
-      await inventoryPage.addProductToCart(desiredProduct[0]);
-      await inventoryPage.checkShoppingCartCount(desiredProduct.length);
-      await inventoryPage.clickShoppingCart();
+      await test.step('Perform checkout process', async () => {
+        await inventoryPage.addProductToCart(desiredProduct[0]);
+        await inventoryPage.checkShoppingCartCount(desiredProduct.length);
+        await inventoryPage.clickShoppingCart();
 
-      await inventoryPage.checkUrl('https://www.saucedemo.com/v1/cart.html');
+        await inventoryPage.checkUrl('https://www.saucedemo.com/v1/cart.html');
 
-      const cartProducts = await inventoryPage.checkCartProducts();
-      expect(cartProducts).toEqual(desiredProduct);
+        const cartProducts = await inventoryPage.checkCartProducts();
+        expect(cartProducts).toEqual(desiredProduct);
 
-      await inventoryPage.clickCheckout();
+        await inventoryPage.clickCheckout();
 
-      await checkOutYourInfoPage.checkUrl('https://www.saucedemo.com/v1/checkout-step-one.html');
+        await checkOutYourInfoPage.checkUrl('https://www.saucedemo.com/v1/checkout-step-one.html');
 
-      await checkOutYourInfoPage.fillFirstName('Ram');
-      await checkOutYourInfoPage.fillLastName('Bhai');
-      await checkOutYourInfoPage.fillZipCode('12345');
-      await checkOutYourInfoPage.clickContinueButton();
+        await checkOutYourInfoPage.fillFirstName('Ram');
+        await checkOutYourInfoPage.fillLastName('Bhai');
+        await checkOutYourInfoPage.fillZipCode('12345');
+        await checkOutYourInfoPage.clickContinueButton();
 
-      await checkOutYourInfoPage.checkUrl('https://www.saucedemo.com/v1/checkout-step-two.html');
+        await checkOutYourInfoPage.checkUrl('https://www.saucedemo.com/v1/checkout-step-two.html');
 
-      const checkoutProducts = await checkoutOverviewPage.checkCheckoutProducts();
-      expect(checkoutProducts).toEqual(desiredProduct);
-      await checkoutOverviewPage.clickFinishButton();
+        const checkoutProducts = await checkoutOverviewPage.checkCheckoutProducts();
+        expect(checkoutProducts).toEqual(desiredProduct);
+        await checkoutOverviewPage.clickFinishButton();
 
-      await checkoutCompletePage.checkUrl('https://www.saucedemo.com/v1/checkout-complete.html');
-      await checkoutCompletePage.checksubHeader('THANK YOU FOR YOUR ORDER');
+        await checkoutCompletePage.checkUrl('https://www.saucedemo.com/v1/checkout-complete.html');
+        await checkoutCompletePage.checksubHeader('THANK YOU FOR YOUR ORDER');
+      });
   });
 
 });

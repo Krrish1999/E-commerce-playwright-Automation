@@ -1,4 +1,4 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, Locator, Page, test } from '@playwright/test';
 
 export class CheckoutOverviewPage {
   readonly page: Page;
@@ -29,7 +29,9 @@ export class CheckoutOverviewPage {
    * @param {string} url - The URL to compare with the current page URL.
    */
   async checkUrl(url: string) {
-    await expect(this.page).toHaveURL(url);
+    await test.step(`Check URL is ${url}`, async () => {
+      await expect(this.page).toHaveURL(url);
+    });
   }
 
   /**
@@ -38,15 +40,22 @@ export class CheckoutOverviewPage {
    * @return {Promise<string[]>} An array of strings representing the text content of cart items.
    */
   async checkCheckoutProducts(): Promise<string[]> {
-    return await this.elements.cartItems.allTextContents();
+    return await test.step('Get checkout products', async () => {
+      await this.elements.cartItems.first().waitFor();
+      return await this.elements.cartItems.allTextContents();
+    });
   }
   /**
    * Clicks the finish button on the page.
    *
    * @return {Promise<void>} A promise that resolves when the finish button is clicked.
    */
+
   async clickFinishButton() {
-    await this.elements.finishButton.click();
+    await test.step('Click finish button', async () => {
+      await this.elements.finishButton.waitFor();
+      await this.elements.finishButton.click();
+    });
   }
 
 }

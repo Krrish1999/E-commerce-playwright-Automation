@@ -25,11 +25,13 @@ Steps:
 test('Login with an Invalid User', {
     tag: ['@login', '@negative']
 }, async ({ loginPage }) => {
-  await loginPage.navigate();
-  await loginPage.fillUserName(process.env.LOCKED_OUT_USERNAME);
-  await loginPage.fillPassword(process.env.INVALID_PASSWORD);
-  await loginPage.clickLoginButton();
-  await loginPage.checkErrorMessage();
+  await test.step('Attempt login with invalid user', async () => {
+    await loginPage.navigate();
+    await loginPage.fillUserName(process.env.LOCKED_OUT_USERNAME);
+    await loginPage.fillPassword(process.env.INVALID_PASSWORD);
+    await loginPage.clickLoginButton();
+    await loginPage.checkErrorMessage();
+  });
 });
 
 /*
@@ -45,11 +47,13 @@ Steps:
 test('Login with a valid user', {
     tag: ['@login', '@positive']
 }, async ({ page, loginPage }) => {
-  await loginPage.navigate();
-  await loginPage.fillUserName(process.env.STANDARD_USERNAME);
-  await loginPage.fillPassword(process.env.PASSWORD);
-  await loginPage.clickLoginButton();
-  await loginPage.checkUrl('https://www.saucedemo.com/v1/inventory.html');
-  await expect(page.locator('#inventory_container').nth(1)).toBeVisible();
-  await expect(page.getByText('Products')).toBeVisible();
+  await test.step('Login with valid user and check inventory', async () => {
+    await loginPage.navigate();
+    await loginPage.fillUserName(process.env.STANDARD_USERNAME);
+    await loginPage.fillPassword(process.env.PASSWORD);
+    await loginPage.clickLoginButton();
+    await loginPage.checkUrl('https://www.saucedemo.com/v1/inventory.html');
+    await expect(page.locator('#inventory_container').nth(1)).toBeVisible();
+    await expect(page.getByText('Products')).toBeVisible();
+  });
 });

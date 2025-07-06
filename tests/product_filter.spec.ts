@@ -21,11 +21,13 @@ const test = base.extend<{
 
 test.describe('Apply Filters', () => {
   test.beforeEach(async ({ loginPage }) => {
-    await loginPage.navigate();
-    await loginPage.fillUserName(process.env.STANDARD_USERNAME);
-    await loginPage.fillPassword(process.env.PASSWORD);
-    await loginPage.clickLoginButton();
-    await loginPage.checkUrl('https://www.saucedemo.com/v1/inventory.html');
+    await test.step('Login as standard user before filter tests', async () => {
+      await loginPage.navigate();
+      await loginPage.fillUserName(process.env.STANDARD_USERNAME);
+      await loginPage.fillPassword(process.env.PASSWORD);
+      await loginPage.clickLoginButton();
+      await loginPage.checkUrl('https://www.saucedemo.com/v1/inventory.html');
+    });
   });
     /*
     This test case verifies that products can be filtered by name in descending order (Z to A).
@@ -38,13 +40,15 @@ test.describe('Apply Filters', () => {
     test('Filter Products by Name - Z to A', {
         tag: ['@purchase', '@filter', '@name' ]
     }, async ({ inventoryPage }) => {
-      await inventoryPage.selectProductFilter('Name (Z to A)');
+      await test.step('Filter products by name Z to A and validate', async () => {
+        await inventoryPage.selectProductFilter('Name (Z to A)');
 
-      const productNames = await inventoryPage.getProductNames();
-      expect(productNames).toHaveLength(6);
+        const productNames = await inventoryPage.getProductNames();
+        expect(productNames).toHaveLength(6);
 
-      const sortedProductNames = [...productNames].sort().reverse();
-      expect(productNames).toEqual(sortedProductNames);
+        const sortedProductNames = [...productNames].sort().reverse();
+        expect(productNames).toEqual(sortedProductNames);
+      });
     }); 
 
     /*
@@ -58,13 +62,15 @@ test.describe('Apply Filters', () => {
     test('Filter Products by Price - Low to High', {
         tag: ['@purchase', '@filter', '@price' ]
     }, async ({ inventoryPage }) => {
-      await inventoryPage.selectProductFilter('Price (low to high)');
+      await test.step('Filter products by price low to high and validate', async () => {
+        await inventoryPage.selectProductFilter('Price (low to high)');
 
-      const productPrices = await inventoryPage.getProductPrices();
-      expect( productPrices).toHaveLength(6);
+        const productPrices = await inventoryPage.getProductPrices();
+        expect(productPrices).toHaveLength(6);
 
-      for (let i = 0; i < productPrices.length - 1; i++) {
-        expect(productPrices[i]).toBeLessThanOrEqual(productPrices[i + 1]);
-      }
+        for (let i = 0; i < productPrices.length - 1; i++) {
+          expect(productPrices[i]).toBeLessThanOrEqual(productPrices[i + 1]);
+        }
+      });
     });
 });
